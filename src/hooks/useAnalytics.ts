@@ -10,7 +10,11 @@ export function useAnalytics() {
       },
     });
     window.dispatchEvent(customEvent);
-    console.log("window", window.umami);
+    if (window.umami) {
+      console.log("Sending event to Umami", type, element);
+    } else {
+      console.warn("Umami is not loaded yet");
+    }
   };
 
   return { trackEvent };
