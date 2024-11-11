@@ -1,3 +1,11 @@
+declare global {
+  interface Window {
+    umami?: {
+      trackEvent: (type: string, data: { element: string }) => void;
+    }
+  }
+}
+
 export function useAnalytics() {
   const trackEvent = (type: string, element: string) => {
     // Create a custom event for other parts of the app if needed
