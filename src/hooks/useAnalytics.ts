@@ -1,6 +1,7 @@
 export function useAnalytics() {
   const trackEvent = (type: string, element: string) => {
-    const event = new CustomEvent('analytics-event', {
+    // Create a custom event for other parts of the app if needed
+    const customEvent = new CustomEvent('analytics-event', {
       detail: {
         id: Math.random().toString(36).substring(2),
         type,
@@ -8,7 +9,8 @@ export function useAnalytics() {
         timestamp: Date.now(),
       },
     });
-    window.dispatchEvent(event);
+    window.dispatchEvent(customEvent);
+    console.log("window", window.umami);
   };
 
   return { trackEvent };
