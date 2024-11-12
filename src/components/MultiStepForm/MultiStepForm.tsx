@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { StepIndicator } from "./StepIndicator";
 import { StepFields } from "./StepFields";
@@ -52,20 +52,31 @@ export function MultiStepForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({});
   const { trackEvent } = useAnalytics();
-  const handleBeforeUnload = useCallback(() => {
+
+  const handleBeforeUnload = () => {
     trackEvent("exit_form", {
-      // "inputs_filled": steps[currentStep].fields
-      //   .filter((field) => formData[field.name])
-      //   .map((field) => field.name)
-      //   .join(", "),
       "step_left": currentStep + 1,
     });
-  }, [currentStep, formData, trackEvent]);
+  };
+  // const handleBeforeUnload = useCallback(() => {
+  //   trackEvent("exit_form", {
+  //     // "inputs_filled": steps[currentStep].fields
+  //     //   .filter((field) => formData[field.name])
+  //     //   .map((field) => field.name)
+  //     //   .join(", "),
+  //     "step_left": currentStep + 1,
+  //   });
+  // }, [currentStep, formData, trackEvent]);
 
-  useEffect(() => {
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [handleBeforeUnload]);
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  // useEffect(() => {
+  //   window.addEventListener("beforeunload", () =>{
+  //     trackEvent("exit_form", {
+  //       "step_left": currentStep + 1,
+  //     });
+  //   });
+  // }, []);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
