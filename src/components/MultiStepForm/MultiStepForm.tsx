@@ -54,10 +54,10 @@ export function MultiStepForm() {
   const { trackEvent } = useAnalytics();
   const handleBeforeUnload = useCallback(() => {
     trackEvent("exit_form", {
-      "inputs_filled": steps[currentStep].fields
-        .filter((field) => formData[field.name])
-        .map((field) => field.name)
-        .join(", "),
+      // "inputs_filled": steps[currentStep].fields
+      //   .filter((field) => formData[field.name])
+      //   .map((field) => field.name)
+      //   .join(", "),
       "step_left": currentStep + 1,
     });
   }, [currentStep, formData, trackEvent]);
