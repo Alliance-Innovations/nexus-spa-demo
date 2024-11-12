@@ -53,31 +53,20 @@ export function MultiStepForm() {
   const [formData, setFormData] = useState<FormData>({});
   const { trackEvent } = useAnalytics();
 
-  const handleBeforeUnload = useCallback(() => {
+  const handleBeforeUnload = useCallback((event: BeforeUnloadEvent) => {
     trackEvent("exit_form", {
       "step_left": currentStep + 1,
     });
+    event.preventDefault();
+    return "";
   }, [currentStep, trackEvent]);
-  // const handleBeforeUnload = useCallback(() => {
-  //   trackEvent("exit_form", {
-  //     // "inputs_filled": steps[currentStep].fields
-  //     //   .filter((field) => formData[field.name])
-  //     //   .map((field) => field.name)
-  //     //   .join(", "),
-  //     "step_left": currentStep + 1,
-  //   });
-  // }, [currentStep, formData, trackEvent]);
-  useEffect(() => {
-    window.addEventListener("beforeunload", handleBeforeUnload);
-  }, [handleBeforeUnload]);
 
-  // useEffect(() => {
-  //   window.addEventListener("beforeunload", () =>{
-  //     trackEvent("exit_form", {
-  //       "step_left": currentStep + 1,
-  //     });
-  //   });
-  // }, []);
+  useEffect(() => {
+    window.onbeforeunload = handleBeforeUnload;
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [handleBeforeUnload]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -118,6 +107,12 @@ export function MultiStepForm() {
     setCurrentStep(0);
   };
 
+  const handleMockExit = () => {
+    trackEvent("exit_form", {
+      "step_left": currentStep + 1,
+    });
+  };
+
   return (
     <div className="bg-white rounded-lg p-6 border border-gray-200">
       <StepIndicator steps={steps} currentStep={currentStep} />
@@ -142,7 +137,7 @@ export function MultiStepForm() {
 
             <button
               type="button"
-              onClick={handleBeforeUnload}
+              onClick={handleMockExit}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               Mock Exit
