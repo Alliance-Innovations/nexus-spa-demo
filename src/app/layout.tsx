@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Analytics Platform Demo',
   description: 'Experience real-time analytics event tracking',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

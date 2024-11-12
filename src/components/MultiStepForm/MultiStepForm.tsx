@@ -99,9 +99,6 @@ export function MultiStepForm() {
 
   const handleFieldChange = (field: string, value: string | boolean) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
-    trackEvent("input_change", {
-      "field_name": field,
-    });
   };
 
   const handleReset = () => {
