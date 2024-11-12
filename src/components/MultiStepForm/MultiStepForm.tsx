@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { StepIndicator } from "./StepIndicator";
 import { StepFields } from "./StepFields";
@@ -53,11 +53,11 @@ export function MultiStepForm() {
   const [formData, setFormData] = useState<FormData>({});
   const { trackEvent } = useAnalytics();
 
-  const handleBeforeUnload = () => {
+  const handleBeforeUnload = useCallback(() => {
     trackEvent("exit_form", {
       "step_left": currentStep + 1,
     });
-  };
+  }, [currentStep, trackEvent]);
   // const handleBeforeUnload = useCallback(() => {
   //   trackEvent("exit_form", {
   //     // "inputs_filled": steps[currentStep].fields
@@ -67,8 +67,9 @@ export function MultiStepForm() {
   //     "step_left": currentStep + 1,
   //   });
   // }, [currentStep, formData, trackEvent]);
-
-  window.addEventListener("beforeunload", handleBeforeUnload);
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
+  }, [handleBeforeUnload]);
 
   // useEffect(() => {
   //   window.addEventListener("beforeunload", () =>{
