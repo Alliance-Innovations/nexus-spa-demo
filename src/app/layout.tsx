@@ -7,8 +7,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Analytics Platform Demo',
-  description: 'Experience real-time analytics event tracking',
+  title: 'Nexus Analytics Platform Demo',
+  description: 'Nexus Analytics Platform Demo',
   icons: {
     icon: '/favicon.ico',
   },
