@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 type Event = {
   id: string;
   type: string;
-  element: string;
+  eventData: Record<string, unknown>;
   timestamp: number;
 };
 
@@ -57,7 +57,13 @@ export function EventLog() {
               <span>{event.type}</span>
               <span>{new Date(event.timestamp).toLocaleTimeString()}</span>
             </div>
-            <div className="text-gray-800 mt-1">{event.element}</div>
+            <div className="text-gray-800 mt-1">
+              {Object.entries(event.eventData).map(([key, value]) => (
+                <div key={key}>
+                  <strong>{key}:</strong> {String(value)}
+                </div>
+              ))}
+            </div>
           </div>
         ))}
         {events.length === 0 && (

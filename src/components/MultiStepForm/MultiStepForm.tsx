@@ -53,14 +53,13 @@ export function MultiStepForm() {
   const [formData, setFormData] = useState<FormData>({});
   const { trackEvent } = useAnalytics();
   const handleBeforeUnload = useCallback(() => {
-    trackEvent("exit_step", `User left on step ${currentStep + 1}`);
-    trackEvent(
-      "inputs_filled",
-      steps[currentStep].fields
+    trackEvent("exit_form", {
+      "inputs_filled": steps[currentStep].fields
         .filter((field) => formData[field.name])
         .map((field) => field.name)
-        .join(", ")
-    );
+        .join(", "),
+      "step_left": currentStep + 1,
+    });
   }, [currentStep, formData, trackEvent]);
 
   useEffect(() => {
@@ -70,14 +69,18 @@ export function MultiStepForm() {
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      trackEvent("button_click", "Next Step Button");
+      trackEvent("button_click", {
+        "button_name": "Next Step Button",
+      });
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      trackEvent("button_click", "Previous Step Button");
+      trackEvent("button_click", {
+        "button_name": "Previous Step Button",
+      });
       setCurrentStep(currentStep - 1);
     }
   };
@@ -85,8 +88,9 @@ export function MultiStepForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentStep === steps.length - 1) {
-      console.log("Form submitted on last step");
-      trackEvent("form_submit", "Multi-step Form Submission");
+      trackEvent("form_submit", {
+        "form_name": "Multi-step Form",
+      });
       setCurrentStep(steps.length); // Move to the celebration step
     } else {
       handleNext();
@@ -95,7 +99,9 @@ export function MultiStepForm() {
 
   const handleFieldChange = (field: string, value: string | boolean) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
-    trackEvent("input_change", `Field ${field} filled out`);
+    trackEvent("input_change", {
+      "field_name": field,
+    });
   };
 
   const handleReset = () => {
