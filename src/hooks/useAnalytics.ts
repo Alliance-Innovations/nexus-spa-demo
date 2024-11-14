@@ -1,23 +1,19 @@
+import { useAnalyticsStore } from "../store/analytics";
+
 declare global {
   interface Window {
     nexus?: {
       track: (type: string, data: Record<string, unknown>) => void;
-    }
+    };
   }
 }
 
 export function useAnalytics() {
+  const addEvent = useAnalyticsStore((state) => state.addEvent);
+
   const trackEvent = (type: string, eventData: Record<string, unknown>) => {
-    // Create a custom event for other parts of the app if needed
-    const customEvent = new CustomEvent('analytics-event', {
-      detail: {
-        id: Math.random().toString(36).substring(2),
-        type,
-        eventData,
-        timestamp: Date.now(),
-      },
-    });
-    window.dispatchEvent(customEvent);
+    addEvent(type, eventData);
+
     if (window.nexus) {
       window.nexus.track(type, eventData);
     } else {

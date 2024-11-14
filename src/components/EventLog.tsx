@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-
-type Event = {
-  id: string;
-  type: string;
-  eventData: Record<string, unknown>;
-  timestamp: number;
-};
+import { useEffect, useRef } from "react";
+import { useAnalyticsStore } from "../store/analytics";
 
 export function EventLog() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const { events, clearEvents} = useAnalyticsStore();
 
   const latestEventRef = useRef<HTMLDivElement>(null);
 
@@ -19,21 +13,6 @@ export function EventLog() {
       latestEventRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [events]);
-
-  useEffect(() => {
-    const handleCustomEvent = (e: CustomEvent<Event>) => {
-      setEvents((prev) => [...prev, e.detail]);
-    };
-
-    window.addEventListener("analytics-event", handleCustomEvent as EventListener);
-    return () => {
-      window.removeEventListener("analytics-event", handleCustomEvent as EventListener);
-    };
-  }, []);
-
-  const clearEvents = () => {
-    setEvents([]);
-  };
 
   return (
     <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
