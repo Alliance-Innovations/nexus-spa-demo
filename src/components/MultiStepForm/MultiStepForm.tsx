@@ -54,22 +54,15 @@ export function MultiStepForm() {
   const { trackEvent } = useAnalytics();
 
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      return "";
-    };
-
     const handleUnload = () => {
       trackEvent("exit_form", {
         step_left: currentStep + 1,
       });
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("unload", handleUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("unload", handleUnload);
     };
   }, [currentStep, trackEvent]);
