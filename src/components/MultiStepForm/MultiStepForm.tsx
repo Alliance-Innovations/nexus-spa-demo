@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { StepIndicator } from "./StepIndicator";
 import { StepFields } from "./StepFields";
@@ -53,25 +53,31 @@ export function MultiStepForm() {
   const [formData, setFormData] = useState<FormData>({});
   const { trackEvent } = useAnalytics();
 
-  const handleBeforeUnload = useCallback((event: BeforeUnloadEvent) => {
-    trackEvent("exit_form", {
-      "step_left": currentStep + 1,
-    });
-    event.preventDefault();
-    return "";
-  }, [currentStep, trackEvent]);
-
   useEffect(() => {
-    window.onbeforeunload = handleBeforeUnload;
-    return () => {
-      window.onbeforeunload = null;
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      return "";
     };
-  }, [handleBeforeUnload]);
+
+    const handleUnload = () => {
+      trackEvent("exit_form", {
+        step_left: currentStep + 1,
+      });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, [currentStep, trackEvent]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       trackEvent("button_click", {
-        "button_name": "Next Step Button",
+        button_name: "Next Step Button",
       });
       setCurrentStep(currentStep + 1);
     }
@@ -80,7 +86,7 @@ export function MultiStepForm() {
   const handlePrevious = () => {
     if (currentStep > 0) {
       trackEvent("button_click", {
-        "button_name": "Previous Step Button",
+        button_name: "Previous Step Button",
       });
       setCurrentStep(currentStep - 1);
     }
@@ -90,7 +96,7 @@ export function MultiStepForm() {
     e.preventDefault();
     if (currentStep === steps.length - 1) {
       trackEvent("form_submit", {
-        "form_name": "Multi-step Form",
+        form_name: "Multi-step Form",
       });
       setCurrentStep(steps.length); // Move to the celebration step
     } else {
@@ -109,7 +115,7 @@ export function MultiStepForm() {
 
   const handleMockExit = () => {
     trackEvent("exit_form", {
-      "step_left": currentStep + 1,
+      step_left: currentStep + 1,
     });
   };
 

@@ -9,7 +9,7 @@ declare global {
 }
 
 export function useAnalytics() {
-  const addEvent = useAnalyticsStore((state) => state.addEvent);
+  const { addEvent } = useAnalyticsStore();
 
   const trackEvent = (type: string, eventData: Record<string, unknown>) => {
     addEvent(type, eventData);
