@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAnalytics } from "@/hooks/useAnalytics";
+import { useNexus } from "@/hooks/useNexus";
 import { StepIndicator } from "./StepIndicator";
 import { StepFields } from "./StepFields";
 
@@ -51,7 +51,7 @@ interface FormData {
 export function MultiStepForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({});
-  const { trackEvent } = useAnalytics();
+  const { trackEvent } = useNexus();
 
   useEffect(() => {
     const handleUnload = () => {

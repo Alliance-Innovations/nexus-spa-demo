@@ -1,4 +1,4 @@
-import { useAnalyticsStore } from "../store/analytics";
+import { useEventStore } from "../store/events";
 
 declare global {
   interface Window {
@@ -8,8 +8,8 @@ declare global {
   }
 }
 
-export function useAnalytics() {
-  const { addEvent } = useAnalyticsStore();
+export function useNexus() {
+  const { addEvent } = useEventStore();
 
   const trackEvent = (type: string, eventData: Record<string, unknown>) => {
     addEvent(type, eventData);

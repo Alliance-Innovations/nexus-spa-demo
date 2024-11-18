@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useAnalyticsStore } from "../store/analytics";
+import { useEventStore } from "../store/events";
 
 export function EventLog() {
-  const { events, clearEvents} = useAnalyticsStore();
+  const { events, clearEvents} = useEventStore();
 
   const latestEventRef = useRef<HTMLDivElement>(null);
 

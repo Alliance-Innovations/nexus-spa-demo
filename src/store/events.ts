@@ -7,13 +7,13 @@ type Event = {
   timestamp: number;
 };
 
-type AnalyticsStore = {
+type EventStore = {
   events: Event[];
   addEvent: (type: string, eventData: Record<string, unknown>) => void;
   clearEvents: () => void;
 };
 
-export const useAnalyticsStore = create<AnalyticsStore>((set) => ({
+export const useEventStore = create<EventStore>((set) => ({
   events: [],
   addEvent: (type, eventData) => set((state) => ({
     events: [...state.events, {
