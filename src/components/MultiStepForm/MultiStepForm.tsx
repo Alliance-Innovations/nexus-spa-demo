@@ -39,7 +39,21 @@ const steps = [
         label: "Subscribe to newsletter",
         type: "checkbox",
       },
-      { name: "updates", label: "Receive product updates", type: "checkbox" },
+      {
+        name: "updates",
+        label: "Receive product updates",
+        type: "checkbox",
+      },
+      {
+        name: "contactPreference",
+        label: "Preferred contact method",
+        type: "radio",
+        options: [
+          { value: "email", label: "Email" },
+          { value: "phone", label: "Phone" },
+          { value: "both", label: "Both" }
+        ]
+      }
     ],
   },
 ];

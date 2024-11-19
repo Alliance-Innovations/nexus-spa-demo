@@ -4,7 +4,12 @@ export function StepFields({
   formData,
   handleFieldChange,
 }: {
-  fields: Array<{ name: string; label: string; type: string }>;
+  fields: Array<{
+    name: string;
+    label: string;
+    type: string;
+    options?: Array<{ value: string; label: string }>;
+  }>;
   trackEvent: (event: string, eventData: Record<string, unknown>) => void;
   formData: Record<string, string | boolean>;
   handleFieldChange: (name: string, value: string | boolean) => void;
@@ -19,7 +24,32 @@ export function StepFields({
           >
             {field.label}
           </label>
-          {field.type === "checkbox" ? (
+          {field.type === "radio" && field.options ? (
+            <div className="space-y-2">
+              {field.options.map((option) => (
+                <div key={option.value} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`${field.name}-${option.value}`}
+                    name={field.name}
+                    value={option.value}
+                    checked={(formData[field.name] as string) === option.value}
+                    className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                    onFocus={() => trackEvent("field_focus", {
+                      "field_name": field.label,
+                    })}
+                    onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                  />
+                  <label
+                    htmlFor={`${field.name}-${option.value}`}
+                    className="ml-2 text-sm text-gray-700"
+                  >
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          ) : field.type === "checkbox" ? (
             <input
               type="checkbox"
               id={field.name}
