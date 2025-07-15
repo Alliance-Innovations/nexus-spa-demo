@@ -1,16 +1,15 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import "./globals.css";
 
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import Script from 'next/script';
-import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Nexus Analytics Platform Demo',
-  description: 'Nexus Analytics Platform Demo',
+  title: "Nexus Analytics Platform Demo",
+  description: "Nexus Analytics Platform Demo",
   icons: {
-    icon: '/favicon.ico',
+    icon: "/favicon.ico",
   },
 };
 
@@ -23,8 +22,8 @@ export default function RootLayout({
     <html lang="en">
       <Script
         defer
-        src="https://demo.platform.analytics.nexus/script.js"
-        data-website-id="89d6ef09-3daf-4593-a1ab-c55245b2b0b0"
+        src="https://stg.platform.analytics.nexus/script.js"
+        data-website-id="d9d0d65d-2307-41ed-9ca2-1fdb35133f6a"
         data-do-not-track="true"
       />
       <body className={inter.className}>{children}</body>
