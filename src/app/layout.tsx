@@ -25,6 +25,7 @@ export default function RootLayout({
         defer
         src="https://demo.platform.analytics.nexus/script.js"
         data-website-id="89d6ef09-3daf-4593-a1ab-c55245b2b0b0"
+        data-do-not-track="true"
       />
       <body className={inter.className}>{children}</body>
     </html>
