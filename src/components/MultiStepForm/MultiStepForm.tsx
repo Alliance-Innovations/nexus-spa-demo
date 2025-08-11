@@ -51,9 +51,9 @@ const steps = [
         options: [
           { value: "email", label: "Email" },
           { value: "phone", label: "Phone" },
-          { value: "both", label: "Both" }
-        ]
-      }
+          { value: "both", label: "Both" },
+        ],
+      },
     ],
   },
 ];
@@ -85,6 +85,8 @@ export function MultiStepForm() {
     if (currentStep < steps.length - 1) {
       trackEvent("button_click", {
         button_name: "Next Step Button",
+        events: "click",// testing hotfix NEX1011
+        dateRange: "30d",// testing hotfix NEX1011
       });
       setCurrentStep(currentStep + 1);
     }
@@ -94,6 +96,8 @@ export function MultiStepForm() {
     if (currentStep > 0) {
       trackEvent("button_click", {
         button_name: "Previous Step Button",
+        events: "click", // testing hotfix NEX1011
+        dateRange: "30d",// testing hotfix NEX1011
       });
       setCurrentStep(currentStep - 1);
     }
