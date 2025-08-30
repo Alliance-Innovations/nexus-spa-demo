@@ -49,7 +49,7 @@ export function AnalyticsDashboard() {
       ...events.map(event => [
         event.type,
         event.timestamp,
-        JSON.stringify(event.data)
+        JSON.stringify(event.eventData)
       ])
     ].map(row => row.join(",")).join("\n");
     
@@ -142,7 +142,7 @@ export function AnalyticsDashboard() {
                   </span>
                 </div>
                 <div className="text-gray-600 truncate">
-                  {JSON.stringify(event.data).substring(0, 50)}...
+                  {JSON.stringify(event.eventData).substring(0, 50)}...
                 </div>
               </div>
             ))}
