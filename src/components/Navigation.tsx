@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useNexus } from "@/hooks/useNexus";
+import { ClientOnly } from "./ClientOnly";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -13,7 +14,7 @@ export function Navigation() {
       from: pathname,
       to: page,
       timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
     });
   };
 
@@ -35,21 +36,33 @@ export function Navigation() {
             </div>
           </div>
           <div className="flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => handleNavClick(item.href)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  pathname === item.href
-                    ? "bg-blue-100 text-blue-700"
-                    : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                }`}
-              >
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            ))}
+            <ClientOnly fallback={
+              navItems.map((item) => (
+                <div
+                  key={item.href}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600"
+                >
+                  <span>{item.icon}</span>
+                  <span>{item.label}</span>
+                </div>
+              ))
+            }>
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => handleNavClick(item.href)}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    pathname === item.href
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                  }`}
+                >
+                  <span>{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </ClientOnly>
           </div>
         </div>
       </div>

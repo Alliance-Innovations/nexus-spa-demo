@@ -14,9 +14,9 @@ export function useNexus() {
   const trackEvent = (type: string, eventData: Record<string, unknown>) => {
     addEvent(type, eventData);
 
-    if (window.nexus) {
+    if (typeof window !== 'undefined' && window.nexus) {
       window.nexus.track(type, eventData);
-    } else {
+    } else if (typeof window !== 'undefined') {
       console.warn("nexus is not loaded yet");
     }
   };
