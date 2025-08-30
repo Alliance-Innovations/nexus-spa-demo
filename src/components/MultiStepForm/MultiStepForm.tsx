@@ -65,28 +65,68 @@ interface FormData {
 export function MultiStepForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({});
+  const [startTime, setStartTime] = useState<Date>(new Date());
+  const [stepTimes, setStepTimes] = useState<Record<number, number>>({});
   const { trackEvent } = useNexus();
 
   useEffect(() => {
+    // Track form start
+    trackEvent("form_started", {
+      form_name: "Multi-step Form",
+      total_steps: steps.length,
+      timestamp: new Date().toISOString(),
+    });
+
     const handleUnload = () => {
-      trackEvent("exit_form", {
+      trackEvent("form_abandoned", {
         step_left: currentStep + 1,
+        time_spent: Math.floor((Date.now() - startTime.getTime()) / 1000),
+        form_data_progress: Object.keys(formData).length,
+        timestamp: new Date().toISOString(),
+      });
+    };
+
+    const handleBeforeUnload = () => {
+      trackEvent("form_exit_attempt", {
+        step_left: currentStep + 1,
+        time_spent: Math.floor((Date.now() - startTime.getTime()) / 1000),
+        timestamp: new Date().toISOString(),
       });
     };
 
     window.addEventListener("unload", handleUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       window.removeEventListener("unload", handleUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [currentStep, trackEvent]);
+  }, [currentStep, trackEvent, startTime, formData]);
+
+  useEffect(() => {
+    // Track step completion
+    if (currentStep > 0) {
+      const stepTime = Math.floor((Date.now() - startTime.getTime()) / 1000);
+      setStepTimes(prev => ({ ...prev, [currentStep - 1]: stepTime }));
+      
+      trackEvent("step_completed", {
+        step_number: currentStep,
+        step_name: steps[currentStep - 1].id,
+        step_title: steps[currentStep - 1].title,
+        time_on_step: stepTime,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }, [currentStep, startTime, trackEvent]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      trackEvent("button_click", {
-        button_name: "Next Step Button",
-        events: "click",// testing hotfix NEX1011
-        dateRange: "30d",// testing hotfix NEX1011
+      trackEvent("step_navigation", {
+        direction: "forward",
+        from_step: currentStep + 1,
+        to_step: currentStep + 2,
+        step_name: steps[currentStep].id,
+        timestamp: new Date().toISOString(),
       });
       setCurrentStep(currentStep + 1);
     }
@@ -94,10 +134,12 @@ export function MultiStepForm() {
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      trackEvent("button_click", {
-        button_name: "Previous Step Button",
-        events: "click", // testing hotfix NEX1011
-        dateRange: "30d",// testing hotfix NEX1011
+      trackEvent("step_navigation", {
+        direction: "backward",
+        from_step: currentStep + 1,
+        to_step: currentStep,
+        step_name: steps[currentStep].id,
+        timestamp: new Date().toISOString(),
       });
       setCurrentStep(currentStep - 1);
     }
@@ -106,9 +148,17 @@ export function MultiStepForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentStep === steps.length - 1) {
-      trackEvent("form_submit", {
+      const totalTime = Math.floor((Date.now() - startTime.getTime()) / 1000);
+      
+      trackEvent("form_submitted", {
         form_name: "Multi-step Form",
+        total_steps: steps.length,
+        total_time: totalTime,
+        step_times: stepTimes,
+        form_data: formData,
+        timestamp: new Date().toISOString(),
       });
+      
       setCurrentStep(steps.length); // Move to the celebration step
     } else {
       handleNext();
@@ -117,22 +167,58 @@ export function MultiStepForm() {
 
   const handleFieldChange = (field: string, value: string | boolean) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
+    
+    trackEvent("form_field_changed", {
+      field_name: field,
+      field_value: String(value),
+      step_number: currentStep + 1,
+      step_name: steps[currentStep].id,
+      timestamp: new Date().toISOString(),
+    });
   };
 
   const handleReset = () => {
+    trackEvent("form_reset", {
+      form_name: "Multi-step Form",
+      steps_completed: currentStep,
+      time_spent: Math.floor((Date.now() - startTime.getTime()) / 1000),
+      timestamp: new Date().toISOString(),
+    });
+    
     setFormData({});
     setCurrentStep(0);
+    setStartTime(new Date());
+    setStepTimes({});
   };
 
   const handleMockExit = () => {
-    trackEvent("exit_form", {
+    trackEvent("form_exit_simulation", {
       step_left: currentStep + 1,
+      time_spent: Math.floor((Date.now() - startTime.getTime()) / 1000),
+      form_data_progress: Object.keys(formData).length,
+      timestamp: new Date().toISOString(),
     });
+  };
+
+  const handleStepClick = (stepIndex: number) => {
+    if (stepIndex !== currentStep) {
+      trackEvent("step_direct_navigation", {
+        from_step: currentStep + 1,
+        to_step: stepIndex + 1,
+        step_name: steps[stepIndex].id,
+        timestamp: new Date().toISOString(),
+      });
+      setCurrentStep(stepIndex);
+    }
   };
 
   return (
     <div className="bg-white rounded-lg p-6 border border-gray-200">
-      <StepIndicator steps={steps} currentStep={currentStep} />
+      <StepIndicator 
+        steps={steps} 
+        currentStep={currentStep} 
+        onStepClick={handleStepClick}
+      />
 
       {currentStep < steps.length ? (
         <form onSubmit={handleSubmit}>
@@ -141,6 +227,8 @@ export function MultiStepForm() {
             trackEvent={trackEvent}
             formData={formData}
             handleFieldChange={handleFieldChange}
+            currentStep={currentStep}
+            stepName={steps[currentStep].id}
           />
           <div className="mt-8 flex justify-between">
             <button
