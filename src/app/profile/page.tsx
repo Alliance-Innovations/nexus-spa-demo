@@ -68,7 +68,7 @@ export default function Profile() {
       setProfile(prev => ({
         ...prev,
         [section]: {
-          ...prev[section as keyof UserProfile],
+          ...(prev[section as keyof UserProfile] as Record<string, any>),
           [key]: value,
         },
       }));
